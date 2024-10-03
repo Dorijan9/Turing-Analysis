@@ -1,5 +1,4 @@
 # Turing-Analysis
-Here’s an updated README file that includes explanations for the machine learning model and its corresponding script, in addition to the existing analysis steps:
 
 ---
 
