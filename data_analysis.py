@@ -1,6 +1,7 @@
 #'/Users/dorijandonajmagasic/Documents/Uni modules/Individual Project/ai_job_market_insights.csv'
 # Import necessary libraries
 import pandas as pd
+import numpy as np  # Importing NumPy
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -15,10 +16,11 @@ missing_values = data.isnull().sum()
 print("Missing values per column:")
 print(missing_values)
 
-# Fill missing numerical values with the mean
-data['Salary_USD'] = data['Salary_USD'].fillna(data['Salary_USD'].mean())
+# Handle missing values using NumPy
+# Fill missing numerical values with the mean using NumPy
+data['Salary_USD'] = data['Salary_USD'].fillna(np.nanmean(data['Salary_USD']))
 
-# Fill missing categorical values with the mode
+# Fill missing categorical values with the mode using NumPy
 for column in ['Job_Title', 'Industry', 'Company_Size', 'Location', 'AI_Adoption_Level',
                'Automation_Risk', 'Required_Skills', 'Remote_Friendly', 'Job_Growth_Projection']:
     mode_value = data[column].mode()[0]
@@ -35,6 +37,7 @@ data['Automation_Risk'] = pd.Categorical(data['Automation_Risk'])
 
 # Statistical Summary of Numeric Columns
 summary_stats = data.describe()
+
 print("\nStatistical summary of Salary_USD:")
 print(summary_stats)
 
@@ -84,13 +87,17 @@ correlation_matrix = numeric_data.corr()
 print("\nCorrelation matrix for numeric columns:")
 print(correlation_matrix)
 
-# Create new feature: Salary Bracket (Low, Medium, High)
+# Create new feature: Salary Bracket (Low, Medium, High) using NumPy
 salary_brackets = pd.qcut(data['Salary_USD'], q=3, labels=['Low', 'Medium', 'High'])
 data['Salary_Bracket'] = salary_brackets
 
+# Feature: Add Salary normalized feature using NumPy
+# Normalizing the salary using Min-Max Scaling
+data['Salary_Normalized'] = (data['Salary_USD'] - np.min(data['Salary_USD'])) / (np.max(data['Salary_USD']) - np.min(data['Salary_USD']))
+
 # Display the first few rows of the dataset with the new feature
-print("\nDataset with the new Salary Bracket feature:")
-print(data[['Job_Title', 'Salary_USD', 'Salary_Bracket']].head())
+print("\nDataset with the new Salary Bracket and Salary Normalized feature:")
+print(data[['Job_Title', 'Salary_USD', 'Salary_Bracket', 'Salary_Normalized']].head())
 
 # Visualization: Count of Jobs by Salary Bracket and Industry
 plt.figure(figsize=(12, 8))
@@ -100,33 +107,6 @@ plt.xlabel('Industry')
 plt.ylabel('Count')
 plt.xticks(rotation=45, ha='right')
 plt.grid(True)
-plt.show()
-
-# Step 4: Correlation Matrix with Encoded Categorical Variables
-
-# Convert categorical features to numeric encodings for correlation purposes
-data['Location_Code'] = data['Location'].astype('category').cat.codes
-data['Industry_Code'] = data['Industry'].astype('category').cat.codes
-data['Company_Size_Code'] = data['Company_Size'].cat.codes
-data['AI_Adoption_Level_Code'] = data['AI_Adoption_Level'].cat.codes
-data['Automation_Risk_Code'] = data['Automation_Risk'].cat.codes
-data['Remote_Friendly_Code'] = data['Remote_Friendly'].cat.codes
-data['Job_Growth_Projection_Code'] = data['Job_Growth_Projection'].cat.codes
-
-# Create correlation matrix for Salary and encoded features
-correlation_columns = ['Salary_USD', 'Location_Code', 'Industry_Code', 'Company_Size_Code',
-                       'AI_Adoption_Level_Code', 'Automation_Risk_Code',
-                       'Remote_Friendly_Code', 'Job_Growth_Projection_Code']
-
-correlation_matrix = data[correlation_columns].corr()
-
-print("\nCorrelation Matrix for Salary and Encoded Features:")
-print(correlation_matrix)
-
-# Plot the updated correlation matrix
-plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
-plt.title('Correlation Matrix between Salary and Encoded Features')
 plt.show()
 
 # End of script
