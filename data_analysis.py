@@ -1,6 +1,6 @@
 #'/Users/dorijandonajmagasic/Documents/Uni modules/Individual Project/ai_job_market_insights.csv'
 # Import necessary libraries
-import pandas as pd
+import pandas as pd # Importing Pandas
 import numpy as np  # Importing NumPy
 import matplotlib.pyplot as plt
 import seaborn as sns
